@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block heading %}Player{% endblock %}
+{% block subheading %}Listen, queue, and reorder your node chain.{% endblock %}
+
+{% block content %}
+<div class="player-hero">
+  <div class="now-head">
+    <div class="now-media" id="nowMedia"><canvas id="eqCanvas" class="eq"></canvas></div>
+    <div class="now-text">
+      <div class="title" id="npTitle">—</div>
+      <div class="meta" id="npMeta">nothing playing</div>
+      <div class="now-badge" id="npBadge"></div>
+    </div>
+  </div>
+
+  <div class="progress" id="progress"><div class="fill" id="fill"></div></div>
+  <div class="time"><span id="tCur">0:00</span><span id="tDur">0:00</span></div>
+
+  <div class="controls">
+    <button class="ctrl sm" id="shuffleModeBtn" title="Shuffle mode">🔀<span class="lbl">off</span></button>
+    <button class="ctrl" id="prevBtn" title="Previous">⏮</button>
+    <button class="ctrl play" id="playBtn" title="Play/Pause">▶</button>
+    <button class="ctrl" id="nextBtn" title="Next">⏭</button>
+    <button class="ctrl sm" id="repeatBtn" title="Repeat">↻<span class="lbl">off</span></button>
+    <button class="ctrl sm" id="sleepBtn" title="Sleep timer">⏱<span class="lbl">off</span></button>
+  </div>
+
+  <div class="vol">
+    <span class="vol-ico">🔊</span>
+    <input type="range" id="volSlider" min="0" max="1" step="0.01" value="0.8">
+  </div>
+</div>
+
+<div class="queue-section" id="queueSection">
+  <div class="list-head">
+    <span>UP NEXT · <em id="queueCount">0</em></span>
+    <div class="left">
+      <button class="shuffle" id="saveQueueBtn">💾 Save as playlist</button>
+      <button class="shuffle" id="clearQueueBtn">Clear</button>
+    </div>
+  </div>
+  <ul class="nodes" id="queueNodes"></ul>
+</div>
+
+<div class="list-head">
+  <span>PLAYLIST NODES · <em id="nodeCount">0</em></span>
+  <button class="shuffle" id="shuffleOrderBtn">🔀 Shuffle order</button>
+</div>
+<ul class="nodes" id="plNodes"></ul>
+<div class="hint">Click a node to play it · drag to reorder (auto-saved) · double-click a name to rename · hover ✕ to remove</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/app.js') }}"></script>
+<script>Sonify.initPlayer();</script>
+{% endblock %}

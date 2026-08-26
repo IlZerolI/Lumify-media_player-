@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block heading %}Artists{% endblock %}
+{% block subheading %}Browse your library by artist.{% endblock %}
+
+{% block content %}
+{% if not artists %}
+  <div class="empty-state">
+    <div class="empty-icon">🎤</div>
+    <h3 class="empty-title">No artists yet</h3>
+    <p>Artists will automatically appear as you add metadata to your music.</p>
+    <a href="{{ url_for('library.index') }}" class="btn btn-primary">Import Media</a>
+  </div>
+{% else %}
+  <div class="rail">
+    {% for a in artists %}
+    <a class="media-card" href="{{ url_for('artists.detail', artist_name=a.artist) }}">
+      <div class="art">
+        <div class="art-bg"></div>
+        <div class="play-overlay">
+          <button class="play-btn" title="Play all">▶</button>
+        </div>
+      </div>
+      <div class="meta">
+        <div class="title" title="{{ a.artist }}">{{ a.artist }}</div>
+        <div class="sub">{{ a.song_count }} songs · {{ a.album_count }} albums</div>
+      </div>
+    </a>
+    {% endfor %}
+  </div>
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/app.js') }}"></script>
+{% endblock %}

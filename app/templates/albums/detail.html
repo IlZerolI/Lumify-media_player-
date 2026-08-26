@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+{% block heading %}{{ album }}{% endblock %}
+{% block subheading %}{{ artist or 'Various Artists' }} · {{ songs|length }} songs{% endblock %}
+
+{% block content %}
+<div class="list-head">
+  <span>TRACKLIST</span>
+  <div class="left">
+    <button class="btn btn-primary" id="playAlbumBtn">▶ Play</button>
+    <button class="btn btn-ghost" id="shuffleAlbumBtn">🔀 Shuffle</button>
+  </div>
+</div>
+
+{% if not songs %}
+  <div class="empty-state">
+    <div class="empty-icon">💿</div>
+    <h3 class="empty-title">No songs found</h3>
+    <p>This album has no songs in your library yet.</p>
+  </div>
+{% else %}
+  <ul class="nodes" id="albumNodes"></ul>
+{% endif %}
+
+<script>
+(function(){
+  const songs = {{ songs|tojson }};
+  const album = {{ album|tojson }};
+  const artist = {{ artist|tojson }};
+  function fmt(s){ s=Math.max(0,Math.floor(s||0)); return Math.floor(s/60)+':'+String(s%60).padStart(2,'0'); }
+  function escapeHtml(str){ return String(str).replace(/[&<>"']/g,(c)=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','\\'':'&#39;' }[c])); }
+  function sourceBadges(s){
+    const src=(s.source_type||'LOCAL').toLowerCase();
+    let html='<span class="tag src-'+src+'">'+src+'</span>';
+    if(src==='LOCAL') html+='<span class="tag">'+((s.media_type||'MUSIC').toLowerCase())+'</span>';
+    return html;
+  }
+  const listEl=document.getElementById('albumNodes');
+  songs.forEach((s,i)=>{
+    const li=document.createElement('li');
+    li.className='node static';
+    li.dataset.id=s.id;
+    const tag=sourceBadges(s);
+    const sub=[s.artist, s.album].filter(Boolean).join(' · ');
+    const heart=s.is_favorite?'♥':'♡';
+    li.innerHTML=
+      '<div class="idx">'+(i+1)+'</div>'+
+      '<div class="ninfo">'+
+        '<div class="nname"><span class="nm">'+escapeHtml(s.name)+'</span></div>'+
+        '<div class="nlen">'+(s.duration?fmt(s.duration):'—')+
+          (sub?' · '+escapeHtml(sub):'')+' · '+tag+'</div>'+
+      '</div>'+
+      '<button class="fav '+(s.is_favorite?'active':'')+'" title="Like">'+heart+'</button>'+
+      '<button class="qnext" title="Play Next">⏭</button>'+
+      '<button class="qend" title="Add to Queue">+</button>'+
+      '<button class="rm" title="Remove">✕</button>';
+    li.querySelector('.rm').addEventListener('click',async(e)=>{
+      e.stopPropagation();
+      await fetch('/api/songs/'+s.id,{method:'DELETE'});
+      songs.splice(i,1);
+      li.remove();
+    });
+    li.querySelector('.qnext').addEventListener('click',(e)=>{ e.stopPropagation(); if(window.Sonify&&Sonify.enqueueNext) Sonify.enqueueNext(s.id); });
+    li.querySelector('.qend').addEventListener('click',(e)=>{ e.stopPropagation(); if(window.Sonify&&Sonify.enqueue) Sonify.enqueue(s.id); });
+    const favBtn=li.querySelector('.fav');
+    if(favBtn){
+      favBtn.addEventListener('click',async(e)=>{
+        e.stopPropagation();
+        const res=await fetch('/api/songs/'+s.id+'/favorite',{method:'POST'});
+        if(res.ok){ const d=await res.json(); favBtn.textContent=d.is_favorite?'♥':'♡'; favBtn.classList.toggle('active',d.is_favorite); }
+      });
+    }
+    listEl.appendChild(li);
+  });
+  const playBtn=document.getElementById('playAlbumBtn');
+  const shuffleBtn=document.getElementById('shuffleAlbumBtn');
+  if(playBtn){
+    playBtn.addEventListener('click',()=>{
+      if(!songs.length) return;
+      const ids=songs.map(s=>s.id);
+      if(window.Sonify&&Sonify.playNowQueue) Sonify.playNowQueue(ids[0]);
+    });
+  }
+  if(shuffleBtn){
+    shuffleBtn.addEventListener('click',()=>{
+      if(!songs.length) return;
+      const ids=songs.map(s=>s.id);
+      for(let i=ids.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1));[ids[i],ids[j]]=[ids[j],ids[i]]; }
+      if(window.Sonify&&Sonify.playNowQueue) Sonify.playNowQueue(ids[0]);
+    });
+  }
+})();
+</script>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/app.js') }}"></script>
+{% endblock %}

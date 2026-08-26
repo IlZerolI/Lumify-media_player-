@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block heading %}Albums{% endblock %}
+{% block subheading %}Browse your library by album.{% endblock %}
+
+{% block content %}
+{% if not albums %}
+  <div class="empty-state">
+    <div class="empty-icon">💿</div>
+    <h3 class="empty-title">No albums yet</h3>
+    <p>Add album information to your media to organize your library.</p>
+    <a href="{{ url_for('library.index') }}" class="btn btn-primary">Import Media</a>
+  </div>
+{% else %}
+  <div class="rail">
+    {% for a in albums %}
+    <a class="media-card" href="{{ url_for('albums.detail', album_name=a.album) }}{% if a.artist %}?artist={{ a.artist|urlencode }}{% endif %}">
+      <div class="art">
+        <div class="art-bg"></div>
+        <div class="play-overlay">
+          <button class="play-btn" title="Play album">▶</button>
+        </div>
+      </div>
+      <div class="meta">
+        <div class="title" title="{{ a.album }}">{{ a.album }}</div>
+        <div class="sub">{{ a.artist }} · {{ a.song_count }} songs{% if a.year %} · {{ a.year }}{% endif %}</div>
+      </div>
+    </a>
+    {% endfor %}
+  </div>
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/app.js') }}"></script>
+{% endblock %}

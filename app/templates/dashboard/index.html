@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% block heading %}Home{% endblock %}
+{% block subheading %}Your music, your library.{% endblock %}
+
+{% block content %}
+<div class="cards">
+  <div class="card">
+    <div class="card-num">{{ stats.total }}</div>
+    <div class="card-lbl">Total media</div>
+  </div>
+  <div class="card">
+    <div class="card-num">{{ stats.local }}</div>
+    <div class="card-lbl">Local</div>
+  </div>
+  <div class="card">
+    <div class="card-num">{{ stats.youtube }}</div>
+    <div class="card-lbl">YouTube</div>
+  </div>
+  <div class="card">
+    <div class="card-num">{{ stats.spotify }}</div>
+    <div class="card-lbl">Spotify</div>
+  </div>
+</div>
+
+{% if recent %}
+<h2 class="sec-title">Recently Played</h2>
+<div class="rail">
+  {% for s in recent %}
+  <div class="media-card">
+    <div class="art">
+      <div class="play-overlay">
+        <button class="play-btn" onclick="Sonify.playNowQueue({{ s.id }})">▶</button>
+      </div>
+    </div>
+    <div class="meta">
+      <div class="title" title="{{ s.name }}">{{ s.name }}</div>
+      <div class="sub">{{ s.artist or s.source_type or 'LOCAL' }}</div>
+    </div>
+    <div class="actions">
+      <button class="fav {{ 'active' if s.is_favorite }}" onclick="Sonify.toggleFavorite({{ s.id }}, this)" title="Like">♥</button>
+      <button class="qend" onclick="Sonify.enqueue({{ s.id }});Sonify.toast('Added to queue')" title="Add to queue">+</button>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% endif %}
+
+{% if most_played %}
+<h2 class="sec-title">Most Played</h2>
+<ol class="mini-list">
+  {% for s in most_played %}
+  <li>
+    <span class="tag src-{{ (s.source_type or 'LOCAL')|lower }}">{{ s.source_type or 'LOCAL' }}</span>
+    <span class="mini-name">{{ s.name }}</span>
+    <span class="mini-dur">{{ s.play_count }} plays</span>
+  </li>
+  {% endfor %}
+</ol>
+{% endif %}
+
+<h2 class="sec-title">Library · {{ stats.duration }} total</h2>
+<ol class="mini-list">
+  {% for s in songs %}
+  <li>
+    <span class="tag src-{{ (s.source_type or 'LOCAL')|lower }}">{{ s.source_type or 'LOCAL' }}</span>
+    <span class="mini-name">{{ s.name }}</span>
+    <span class="mini-dur">{{ s.duration|fmt_dur }}</span>
+  </li>
+  {% endfor %}
+</ol>
+{% endblock %}

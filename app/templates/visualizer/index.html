@@ -1,0 +1,164 @@
+{% extends "base.html" %}
+{% block heading %}Audio Visualizer{% endblock %}
+{% block subheading %}Animated audio response for local playback.{% endblock %}
+
+{% block content %}
+<div class="vis-wrap">
+  <canvas id="visCanvas" class="vis-canvas" width="1200" height="520"></canvas>
+  <div class="vis-foot">
+    <span class="vis-status" id="visStatus">Play a local track to see the visualizer.</span>
+  </div>
+</div>
+
+<div class="eq-wrap">
+  <div class="eq-presets">
+    {% for name in ["Flat", "Bass Boost", "Rock", "Pop", "Classical"] %}
+    <button class="eq-preset" data-preset="{{ name }}">{{ name }}</button>
+    {% endfor %}
+  </div>
+  <div class="eq-sliders">
+    <label>
+      <span>Bass <em id="bassVal">0</em></span>
+      <input type="range" id="bassSlider" min="-12" max="12" step="1" value="0">
+    </label>
+    <label>
+      <span>Mid <em id="midVal">0</em></span>
+      <input type="range" id="midSlider" min="-12" max="12" step="1" value="0">
+    </label>
+    <label>
+      <span>Treble <em id="trebleVal">0</em></span>
+      <input type="range" id="trebleSlider" min="-12" max="12" step="1" value="0">
+    </label>
+  </div>
+  <button class="browse-btn" id="eqSave">Save Preset</button>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/app.js') }}"></script>
+<script>
+(function(){
+  const canvas = document.getElementById('visCanvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const status = document.getElementById('visStatus');
+
+  function resize() {
+    const dpr = window.devicePixelRatio || 1;
+    const rect = canvas.getBoundingClientRect();
+    canvas.width = rect.width * dpr;
+    canvas.height = rect.height * dpr;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  }
+  window.addEventListener('resize', resize);
+  resize();
+
+  const accent1 = '#8b5cf6';
+  const accent2 = '#f5c842';
+  const accent3 = '#00e0c6';
+
+  function draw() {
+    const w = canvas.clientWidth;
+    const h = canvas.clientHeight;
+    ctx.clearRect(0, 0, w, h);
+
+    const hasAnalyser = window.Sonify && Sonify._hasAnalyser && Sonify._hasAnalyser();
+    if (!hasAnalyser) {
+      ctx.fillStyle = '#8a8aa6';
+      ctx.font = '14px "Segoe UI", system-ui, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('Play local audio to start the visualizer.', w / 2, h / 2);
+      if (status) status.textContent = 'Waiting for playback...';
+      requestAnimationFrame(draw);
+      return;
+    }
+
+    const data = new Uint8Array(Sonify._getAnalyserData());
+    const bars = Math.min(data.length, 64);
+    const gap = 4;
+    const barW = Math.max(4, (w - gap * (bars - 1)) / bars);
+    const step = Math.floor(data.length / bars) || 1;
+
+    for (let i = 0; i < bars; i++) {
+      const v = data[i * step] / 255;
+      const barH = Math.max(4, v * h * 0.85);
+      const x = i * (barW + gap);
+      const y = h - barH;
+
+      const grad = ctx.createLinearGradient(x, y, x, h);
+      grad.addColorStop(0, accent2);
+      grad.addColorStop(0.5, accent1);
+      grad.addColorStop(1, accent3);
+      ctx.fillStyle = grad;
+      ctx.beginPath();
+      ctx.roundRect(x, y, barW, barH, 4);
+      ctx.fill();
+    }
+
+    if (status) status.textContent = 'Visualizer active';
+    requestAnimationFrame(draw);
+  }
+
+  requestAnimationFrame(draw);
+
+  const presets = {
+    "Flat": { bass: 0, mid: 0, treble: 0 },
+    "Bass Boost": { bass: 10, mid: 0, treble: -2 },
+    "Rock": { bass: 4, mid: 2, treble: 5 },
+    "Pop": { bass: -1, mid: 3, treble: 4 },
+    "Classical": { bass: 3, mid: -1, treble: 3 },
+  };
+  const bass = document.getElementById('bassSlider');
+  const mid = document.getElementById('midSlider');
+  const treble = document.getElementById('trebleSlider');
+  const bassVal = document.getElementById('bassVal');
+  const midVal = document.getElementById('midVal');
+  const trebleVal = document.getElementById('trebleVal');
+
+  function syncUI(name) {
+    const p = presets[name] || presets['Flat'];
+    if (bass) { bass.value = p.bass; bassVal.textContent = p.bass; }
+    if (mid) { mid.value = p.mid; midVal.textContent = p.mid; }
+    if (treble) { treble.value = p.treble; trebleVal.textContent = p.treble; }
+    document.querySelectorAll('.eq-preset').forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.preset === name);
+    });
+  }
+
+  document.querySelectorAll('.eq-preset').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const name = btn.dataset.preset;
+      if (window.Sonify && Sonify.applyEQ) Sonify.applyEQ(name);
+      syncUI(name);
+    });
+  });
+
+  function applyCustom() {
+    const b = bass ? +bass.value : 0;
+    const m = mid ? +mid.value : 0;
+    const t = treble ? +treble.value : 0;
+    try { localStorage.setItem('lumifyEq', JSON.stringify({ preset: 'Custom', bass: b, mid: m, treble: t })); } catch (e) {}
+    if (window.Sonify && Sonify.applyEQ) Sonify.applyEQ('Custom');
+    if (bassVal) bassVal.textContent = b;
+    if (midVal) midVal.textContent = m;
+    if (trebleVal) trebleVal.textContent = t;
+    document.querySelectorAll('.eq-preset').forEach(btn => btn.classList.remove('active'));
+  }
+  if (bass) bass.addEventListener('input', applyCustom);
+  if (mid) mid.addEventListener('input', applyCustom);
+  if (treble) treble.addEventListener('input', applyCustom);
+
+  document.getElementById('eqSave').addEventListener('click', () => {
+    if (window.Sonify && Sonify.toast) Sonify.toast('Equalizer settings saved.');
+  });
+
+  try {
+    const saved = JSON.parse(localStorage.getItem('lumifyEq') || 'null');
+    if (saved && saved.preset && window.Sonify && Sonify.applyEQ) {
+      Sonify.applyEQ(saved.preset);
+      syncUI(saved.preset);
+    }
+  } catch (e) {}
+})();
+</script>
+{% endblock %}

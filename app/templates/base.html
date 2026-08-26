@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}LUMIFY{% endblock %}</title>
+  <link rel="icon" href="{{ url_for('static', filename='icons/favicon.svg') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+  <aside class="sidebar">
+    <div class="brand">◈ LUMIFY</div>
+
+    <div class="side-section">
+      <div class="side-label">Main</div>
+      <nav>
+        <a href="{{ url_for('dashboard.index') }}" class="{{ 'active' if request.endpoint == 'dashboard.index' }}">
+          <span>Home</span>
+        </a>
+        <a href="{{ url_for('library.index') }}" class="{{ 'active' if request.endpoint == 'library.index' }}">
+          <span>Library</span>
+        </a>
+      </nav>
+    </div>
+
+    <div class="side-section">
+      <div class="side-label">Your Music</div>
+      <nav>
+        <a href="{{ url_for('library.index') }}?view=liked" class="{{ 'active' if request.endpoint == 'library.index' and request.args.get('view') == 'liked' }}">
+          <span>Liked Songs</span>
+        </a>
+        <a href="{{ url_for('library.index') }}?view=recent" class="{{ 'active' if request.endpoint == 'library.index' and request.args.get('view') == 'recent' }}">
+          <span>Recently Played</span>
+        </a>
+        <a href="{{ url_for('library.index') }}?view=most_played" class="{{ 'active' if request.endpoint == 'library.index' and request.args.get('view') == 'most_played' }}">
+          <span>Most Played</span>
+        </a>
+      </nav>
+    </div>
+
+    <div class="side-section">
+      <div class="side-label">Appearance</div>
+      <nav>
+        <a href="#" id="themeSettingsBtn">
+          <span>Theme</span>
+        </a>
+      </nav>
+    </div>
+
+    <div class="side-section">
+      <div class="side-label">Browse</div>
+      <nav>
+        <a href="{{ url_for('artists.index') }}" class="{{ 'active' if request.endpoint == 'artists.index' or request.endpoint == 'artists.detail' }}">
+          <span>Artists</span>
+        </a>
+        <a href="{{ url_for('albums.index') }}" class="{{ 'active' if request.endpoint == 'albums.index' or request.endpoint == 'albums.detail' }}">
+          <span>Albums</span>
+        </a>
+        <a href="{{ url_for('playlists.index') }}" class="{{ 'active' if request.endpoint == 'playlists.index' }}">
+          <span>Playlists</span>
+        </a>
+        <a href="{{ url_for('player.index') }}" class="{{ 'active' if request.endpoint == 'player.index' }}">
+          <span>Player</span>
+        </a>
+        <a href="{{ url_for('visualizer.index') }}" class="{{ 'active' if request.endpoint == 'visualizer.index' }}">
+          <span>Audio Visualizer</span>
+        </a>
+      </nav>
+    </div>
+
+    <div class="side-foot">your media hub</div>
+  </aside>
+
+  <main>
+    <header class="topbar">
+      <h1>{% block heading %}Home{% endblock %}</h1>
+      <p class="sub">{% block subheading %}Welcome to your media library.{% endblock %}</p>
+    </header>
+    <section class="content">
+      {% block content %}{% endblock %}
+    </section>
+  </main>
+
+  <div class="mini-player" id="miniPlayer" style="display:none">
+    <button class="mp-art" id="mpArt" title="Open player"></button>
+    <div class="mp-info">
+      <div class="mp-title" id="mpTitle">—</div>
+      <div class="mp-artist" id="mpArtist">—</div>
+    </div>
+    <div class="mp-ctrl">
+      <button id="mpPrev" title="Previous">⏮</button>
+      <button id="mpPlay" title="Play/Pause">▶</button>
+      <button id="mpNext" title="Next">⏭</button>
+    </div>
+  </div>
+
+  <div class="modal" id="themeModal">
+    <div class="modal-box">
+      <div class="modal-head">
+        <span>Theme Settings</span>
+        <button class="modal-close" id="themeClose">✕</button>
+      </div>
+      <div class="modal-list" style="padding:18px">
+        <div class="edit-grid">
+          <label>Accent Color
+            <select id="themeAccent">
+              <option value="purple">Purple</option>
+              <option value="blue">Blue</option>
+              <option value="green">Green</option>
+              <option value="red">Red</option>
+              <option value="orange">Orange</option>
+              <option value="pink">Pink</option>
+            </select>
+          </label>
+          <label>Mode
+            <select id="themeMode">
+              <option value="dark">Dark</option>
+              <option value="light">Light</option>
+            </select>
+          </label>
+          <label>Player Style
+            <select id="themeCompact">
+              <option value="default">Default</option>
+              <option value="compact">Compact</option>
+            </select>
+          </label>
+          <label>Artwork Size
+            <select id="themeArtwork">
+              <option value="medium">Medium</option>
+              <option value="small">Small</option>
+              <option value="large">Large</option>
+            </select>
+          </label>
+        </div>
+      </div>
+      <div class="modal-foot">
+        <span class="modal-sel">Changes apply immediately</span>
+        <div>
+          <button class="shuffle" id="themeResetBtn">Reset</button>
+          <button class="browse-btn" id="themeSaveBtn">Done</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {% block scripts %}{% endblock %}
+</body>
+</html>

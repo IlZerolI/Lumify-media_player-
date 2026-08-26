@@ -1,0 +1,15 @@
+services:
+  lumify:
+    build: .
+    container_name: lumify
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./media_player.db:/app/media_player.db
+      - ./app/static/media:/app/app/static/media
+      - ./app/static/media/artworks:/app/app/static/media/artworks
+    environment:
+      - FLASK_DEBUG=0
+      - HOST=0.0.0.0
+      - PORT=5000
+    restart: unless-stopped

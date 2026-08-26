@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block heading %}Playlists{% endblock %}
+{% block subheading %}Your saved collections and current play order.{% endblock %}
+
+{% block content %}
+<div class="list-head">
+  <span>PLAYLIST NODES · <em id="nodeCount">0</em></span>
+  <button class="shuffle" id="shuffleOrderBtn">🔀 Shuffle order</button>
+</div>
+<ul class="nodes" id="plNodes"></ul>
+<div class="hint">Drag a node up/down to change the order. Changes persist on the server.</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/app.js') }}"></script>
+<script>Sonify.initPlaylist();</script>
+{% endblock %}

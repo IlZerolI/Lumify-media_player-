@@ -1,0 +1,4 @@
+Flask>=3.0
+mutagen>=1.47
+Werkzeug>=3.0
+yt-dlp>=2024.0.0

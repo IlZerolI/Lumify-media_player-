@@ -1,0 +1,129 @@
+{% extends "base.html" %}
+{% block heading %}Library{% endblock %}
+{% block subheading %}Browse, search, and manage your collection.{% endblock %}
+
+{% block content %}
+<div class="list-toolbar">
+  <div class="left">
+    <input type="text" id="searchInput" class="search" placeholder="Search your library...">
+    <div class="tabs" id="filterTabs">
+      <button class="tab active" data-f="all">All</button>
+      <button class="tab" data-f="music">Music</button>
+      <button class="tab" data-f="videos">Videos</button>
+      <button class="tab" data-f="local">Local</button>
+      <button class="tab" data-f="youtube">YouTube</button>
+      <button class="tab" data-f="spotify">Spotify</button>
+      <button class="tab" data-f="liked">Liked</button>
+    </div>
+  </div>
+  <div class="left">
+    <button class="browse-btn" id="browseBtn">📁 Browse files</button>
+    <button class="pill" id="viewListBtn" title="List view">☰</button>
+    <button class="pill" id="viewGridBtn" title="Grid view">▦</button>
+  </div>
+</div>
+
+<div class="import-zone" id="importZone">
+  <div class="import-inner">
+    <div class="import-icon">＋</div>
+    <p>Drop audio or video files anywhere, or <label class="link" for="fileInput">browse</label></p>
+    <small>mp3, wav, ogg, mp4, webm — drag a whole folder too</small>
+  </div>
+  <input type="file" id="fileInput" accept="audio/*,video/*,.mp3,.wav,.ogg,.flac,.m4a,.aac,.mp4,.webm,.mkv,.mov,.avi" multiple hidden>
+</div>
+
+<div class="import-panel" id="importPanel" style="display:none">
+  <div class="import-head">
+    <span>Selected Files · <em id="importCount">0</em></span>
+    <button class="shuffle" id="clearImportBtn">Clear</button>
+  </div>
+  <ul class="import-list" id="importList"></ul>
+  <div class="import-foot">
+    <span class="import-status" id="importStatus"></span>
+    <div>
+      <button class="shuffle" id="cancelImportBtn">Cancel</button>
+      <button class="browse-btn" id="doImportBtn">Import</button>
+    </div>
+  </div>
+</div>
+
+<div class="import-results" id="importResults" style="display:none">
+  <div class="results-head">
+    <span>Import Results</span>
+    <button class="shuffle" id="closeResultsBtn">Close</button>
+  </div>
+  <ul class="results-list" id="resultsList"></ul>
+  <div class="results-foot">
+    <button class="browse-btn" id="viewLibraryBtn">View Library</button>
+  </div>
+</div>
+
+<div class="link-import">
+  <div class="link-divider"><span>OR</span></div>
+  <div class="link-row">
+    <input type="text" id="linkInput" class="search" placeholder="Paste a YouTube or Spotify link…">
+    <button class="browse-btn" id="linkImportBtn">Import link</button>
+  </div>
+  <label class="link-option" style="display:flex;align-items:center;gap:8px;margin-top:8px;cursor:pointer">
+    <input type="checkbox" id="youtubeLocalCheck" checked>
+    <span>Download YouTube audio locally when possible</span>
+  </label>
+  <small>Supported: youtube.com/watch, youtu.be, youtube.com/shorts, open.spotify.com/track</small>
+</div>
+
+<ul class="nodes" id="libNodes"></ul>
+
+<div class="modal" id="browseModal">
+  <div class="modal-box">
+    <div class="modal-head">
+      <span>File Browser</span>
+      <button class="modal-close" id="browseClose">✕</button>
+    </div>
+    <div class="modal-path" id="browsePath">…</div>
+    <div class="modal-list" id="browseList"></div>
+    <div class="modal-foot">
+      <span class="modal-sel" id="browseSel">0 selected</span>
+      <div>
+        <button class="shuffle" id="browseImportFolder">Import folder</button>
+        <button class="shuffle" id="browseImport">Import selected</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<div class="modal" id="editModal">
+  <div class="modal-box">
+    <div class="modal-head">
+      <span>Edit Media Information</span>
+      <button class="modal-close" id="editClose">✕</button>
+    </div>
+    <div class="modal-list" style="padding:18px">
+      <div class="edit-grid">
+        <label>Title<input type="text" id="editTitle"></label>
+        <label>Artist<input type="text" id="editArtist"></label>
+        <label>Album<input type="text" id="editAlbum"></label>
+        <label>Album Artist<input type="text" id="editAlbumArtist"></label>
+        <label>Genre<input type="text" id="editGenre"></label>
+        <label>Year<input type="number" id="editYear"></label>
+        <label>Track Number<input type="number" id="editTrackNumber"></label>
+        <label>Artwork<input type="file" id="editArtwork" accept="image/*"></label>
+        <img id="editArtworkPreview" style="display:none;max-width:120px;max-height:120px;border-radius:10px;border:1px solid var(--border);margin-top:8px">
+      </div>
+    </div>
+    <div class="modal-foot">
+      <span class="modal-sel" id="editSongId" style="display:none"></span>
+      <div>
+        <button class="shuffle" id="editCancelBtn">Cancel</button>
+        <button class="browse-btn" id="editSaveBtn">Save Changes</button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/app.js') }}"></script>
+<script>Sonify.initLibrary();</script>
+{% endblock %}
