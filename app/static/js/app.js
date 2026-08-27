@@ -1547,6 +1547,7 @@ window.Sonify = (function () {
               }).then((r2) => r2.json()).then((d2) => {
                 if (d2.error) { toast(d2.error); return; }
                 return fetch("/api/songs").then((r3) => r3.json()).then((all) => {
+                  state.songs = all;
                   const song = all.find((s) => s.name === title || (d2.id && s.id === d2.id));
                   if (song) playNowQueue(song.id);
                 });

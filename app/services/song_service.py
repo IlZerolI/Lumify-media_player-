@@ -490,19 +490,19 @@ def _try_youtube_local(url, video_id):
             artwork_path = None
 
     meta = {
-        "artist": info.get("artist"),
-        "album": info.get("album"),
-        "artwork_path": artwork_path,
-    }
-
-    media_type = "VIDEO" if ext in VIDEO_EXTS else "MUSIC"
-    conn = get_connection()
-    cur = conn.cursor()
-    cur.execute(
-        "INSERT INTO songs "
-        "(name, type, file_path, duration, size, source_type, media_type, "
-        "source_url, source_id, thumbnail_url, artist, album, artwork_path, file_hash) "
-        "VALUES (?, 'file', ?, ?, ?, 'LOCAL', ?, ?, ?, ?, ?, ?, ?, ?)",
+         "artist": info.get("artist"),
+         "album": info.get("album"),
+         "artwork_path": artwork_path,
+     }
+ 
+     media_type = "MUSIC"
+     conn = get_connection()
+     cur = conn.cursor()
+     cur.execute(
+         "INSERT INTO songs "
+         "(name, type, file_path, duration, size, source_type, media_type, "
+         "source_url, source_id, thumbnail_url, artist, album, artwork_path, file_hash) "
+         "VALUES (?, 'file', ?, ?, ?, 'LOCAL', ?, ?, ?, ?, ?, ?, ?, ?)",
         (
             display,
             safe_name,
