@@ -57,6 +57,12 @@ def download_audio(url):
             "video_id": info.get("id"),
         }
 
+    if not os.path.exists(meta["file_path"]):
+        raise ValueError("file_missing")
+
+    return meta
+
+
 def search_youtube(query, max_results=10):
     """Search YouTube and return a list of lightweight result dicts.
 
@@ -79,11 +85,12 @@ def search_youtube(query, max_results=10):
             title = entry.get("title")
             if not video_id or not title:
                 continue
+            thumbnail = entry.get("thumbnail") or f"https://i.ytimg.com/vi/{video_id}/mqdefault.jpg"
             results.append({
                 "title": title,
                 "video_id": video_id,
                 "url": f"https://www.youtube.com/watch?v={video_id}",
-                "thumbnail": entry.get("thumbnail"),
+                "thumbnail": thumbnail,
                 "duration": entry.get("duration"),
                 "uploader": entry.get("uploader") or entry.get("channel"),
             })
