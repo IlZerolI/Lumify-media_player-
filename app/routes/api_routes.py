@@ -9,6 +9,7 @@ from flask import (
 
 from app.controllers import song_controller
 from app.services import playlist_service
+from app.services import youtube_downloader
 
 api_bp = Blueprint("api", __name__, url_prefix="/api")
 
@@ -230,3 +231,15 @@ def reorder_playlist(playlist_id):
     if not ok:
         return jsonify({"error": "not found"}), 404
     return jsonify({"ok": True})
+
+
+@api_bp.route("/youtube/search", methods=["GET"])
+def youtube_search():
+    q = request.args.get("q", "").strip()
+    if not q:
+        return jsonify({"error": "empty query"}), 400
+    try:
+        results = youtube_downloader.search_youtube(q)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+    return jsonify({"query": q, "results": results})

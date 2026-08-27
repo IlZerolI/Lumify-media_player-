@@ -1409,6 +1409,7 @@ window.Sonify = (function () {
     initImport(listEl);
     initFileBrowser(listEl);
     initLinkImport(listEl);
+    initYouTubeSearch(listEl);
 
     const editClose = document.getElementById("editClose");
     const editCancel = document.getElementById("editCancelBtn");
@@ -1458,6 +1459,112 @@ window.Sonify = (function () {
 
     linkBtn.addEventListener("click", doLink);
     linkInput.addEventListener("keydown", (e) => { if (e.key === "Enter") doLink(); });
+  }
+  function initYouTubeSearch(listEl) {
+    const input = document.getElementById("ytSearchInput");
+    const btn = document.getElementById("ytSearchBtn");
+    const resultsDiv = document.getElementById("ytResults");
+    const rail = document.getElementById("ytRail");
+    if (!input || !btn || !resultsDiv || !rail) return;
+
+    const doSearch = async () => {
+      const q = input.value.trim();
+      if (!q) { toast("Enter a search term."); return; }
+      btn.disabled = true;
+      const original = btn.textContent;
+      btn.textContent = "Searching…";
+      try {
+        const res = await fetch("/api/youtube/search?q=" + encodeURIComponent(q));
+        const data = await res.json();
+        if (!res.ok) {
+          toast(data.error || "Search failed.");
+          return;
+        }
+        rail.innerHTML = "";
+        resultsDiv.style.display = data.results.length ? "" : "none";
+        data.results.forEach((r) => {
+          const card = document.createElement("div");
+          card.className = "media-card";
+          const dur = r.duration ? fmt(r.duration) : "—";
+          const thumb = r.thumbnail ? `<img src="${escapeHtml(r.thumbnail)}" loading="lazy">` : "";
+          card.innerHTML =
+            '<div class="art">' + thumb +
+              '<div class="play-overlay">' +
+                `<button class="play-btn" data-url="${escapeHtml(r.url)}" data-title="${escapeHtml(r.title)}">▶</button>` +
+              '</div>' +
+            '</div>' +
+            '<div class="meta">' +
+              `<div class="title" title="${escapeHtml(r.title)}">${escapeHtml(r.title)}</div>` +
+              `<div class="sub">${escapeHtml(r.uploader || "YouTube")} · ${dur}</div>` +
+            '</div>' +
+            '<div class="actions">' +
+              `<button class="yt-import browse-btn" data-url="${escapeHtml(r.url)}">Import</button>` +
+            '</div>';
+          const importBtn = card.querySelector(".yt-import");
+          const playBtn = card.querySelector(".play-btn");
+          if (importBtn) {
+            importBtn.addEventListener("click", async () => {
+              importBtn.disabled = true;
+              const txt = importBtn.textContent;
+              importBtn.textContent = "Importing…";
+              try {
+                const form = new URLSearchParams();
+                form.set("url", r.url);
+                form.set("local", "1");
+                const r2 = await fetch("/api/songs/import", {
+                  method: "POST",
+                  headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                  body: form.toString(),
+                });
+                const d2 = await r2.json();
+                if (!r2.ok) {
+                  toast(d2.error || "Import failed.");
+                } else if (d2.local) {
+                  toast("Downloaded and imported.");
+                } else {
+                  toast("Added to library.");
+                }
+                await refreshLib(listEl);
+              } catch (e) {
+                toast("Import failed.");
+              } finally {
+                importBtn.disabled = false;
+                importBtn.textContent = txt;
+              }
+            });
+          }
+          if (playBtn) {
+            playBtn.addEventListener("click", () => {
+              const url = playBtn.dataset.url;
+              const title = playBtn.dataset.title;
+              const form = new URLSearchParams();
+              form.set("url", url);
+              form.set("local", "1");
+              fetch("/api/songs/import", {
+                method: "POST",
+                headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                body: form.toString(),
+              }).then((r2) => r2.json()).then((d2) => {
+                if (d2.error) { toast(d2.error); return; }
+                return fetch("/api/songs").then((r3) => r3.json()).then((all) => {
+                  const song = all.find((s) => s.name === title || (d2.id && s.id === d2.id));
+                  if (song) playNowQueue(song.id);
+                });
+              }).catch(() => toast("Play import failed."));
+            });
+          }
+          rail.appendChild(card);
+        });
+      } catch (e) {
+        toast("Search failed.");
+      } finally {
+        btn.disabled = false;
+        btn.textContent = original;
+      }
+    };
+
+    btn.addEventListener("click", doSearch);
+    input.addEventListener("keydown", (e) => { if (e.key === "Enter") doSearch(); });
   }
   function initFileBrowser(listEl) {
     const btn = document.getElementById("browseBtn");

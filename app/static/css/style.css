@@ -354,6 +354,8 @@ main {
 .queue-section { padding: 14px; margin-top: 14px; }
 .queue-drag { opacity: 0.6; }
 .queue-over { border-color: var(--accent) !important; box-shadow: 0 0 0 2px rgba(124,92,255,0.3) !important; }
+.yt-search { background: rgba(15,15,26,0.72); backdrop-filter: blur(12px); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px; }
+.yt-results .rail { margin-top: 8px; }
 .list-head {
   display: flex; justify-content: space-between; align-items: center;
   margin: 6px 2px 12px; padding: 10px 14px;

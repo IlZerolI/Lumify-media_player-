@@ -235,7 +235,7 @@ def _migrate_columns(conn):
 | **Backend** | Flask 3.x | Lightweight, perfect for a single-app media server. Blueprints keep routes organized without over-engineering. |
 | **Database** | SQLite | Zero-config, file-based, ideal for personal/media-server workloads. Migrations are trivial. |
 | **Audio Analysis** | Mutagen 1.47 | Pure Python ID3/MP4 tag reader. No external binaries. |
-| **Link Import** | yt-dlp | Actively maintained fork of youtube-dl. Supports YouTube, Spotify, and hundreds of other sites. |
+| **Link Import** | yt-dlp | Actively maintained fork of youtube-dl. Supports YouTube search and download. |
 | **Frontend** | Vanilla JS + CSS | No build step, no npm install, no transpilation. CSS variables enable runtime theming. |
 | **Audio Engine** | Web Audio API | Native browser API for synthesis, EQ, and analysis. No plugins, no WebAssembly. |
 | **Visualization** | Canvas 2D | The analyzer draws directly to a `<canvas>` using frequency bin data. No charting library needed. |
@@ -353,7 +353,8 @@ This means your media survives container restarts and rebuilds.
 
 - **Playback:** Play, pause, next, previous, shuffle, repeat (off / all / one), seek, volume.
 - **Queue:** Drag-and-drop reorder, play next, remove, clear, save as playlist.
-- **Library:** Import local files, YouTube links, Spotify links. Auto-extract metadata and artwork.
+- **Library:** Import local files, YouTube links. Auto-extract metadata and artwork.
+- **YouTube Search:** Search YouTube directly from the Library page and import results with one click.
 - **Playlists:** Create, rename, delete, reorder, add/remove songs. Persisted in SQLite.
 - **Visualizer:** Real-time frequency visualization on a canvas.
 - **Equalizer:** 3-band Web Audio API EQ (bass, mid, treble).

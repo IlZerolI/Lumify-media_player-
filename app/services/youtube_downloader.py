@@ -57,7 +57,34 @@ def download_audio(url):
             "video_id": info.get("id"),
         }
 
-    if not os.path.exists(meta["file_path"]):
-        raise ValueError("file_missing")
+def search_youtube(query, max_results=10):
+    """Search YouTube and return a list of lightweight result dicts.
 
-    return meta
+    Each dict contains: title, video_id, thumbnail, duration, uploader, url
+    """
+    search_term = f"ytsearch{max_results}:{query}"
+    ydl_opts = {
+        "quiet": True,
+        "no_warnings": True,
+        "extract_flat": "in_playlist",
+        "skip_download": True,
+    }
+    results = []
+    with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+        info = ydl.extract_info(search_term, download=False)
+        if not info or "entries" not in info:
+            return results
+        for entry in info["entries"]:
+            video_id = entry.get("id")
+            title = entry.get("title")
+            if not video_id or not title:
+                continue
+            results.append({
+                "title": title,
+                "video_id": video_id,
+                "url": f"https://www.youtube.com/watch?v={video_id}",
+                "thumbnail": entry.get("thumbnail"),
+                "duration": entry.get("duration"),
+                "uploader": entry.get("uploader") or entry.get("channel"),
+            })
+    return results
