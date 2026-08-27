@@ -1,16 +1,16 @@
 CREATE TABLE IF NOT EXISTS songs (
     id            INTEGER PRIMARY KEY AUTOINCREMENT,
     name          TEXT NOT NULL,
-    type          TEXT NOT NULL DEFAULT 'synth',   -- 'synth' | 'file' | 'youtube' | 'spotify'
+    type          TEXT NOT NULL DEFAULT 'synth',   -- 'synth' | 'file' | 'youtube'
     file_path     TEXT,                             -- relative path inside static/media for type='file'
     base          REAL,                             -- synth base frequency (Hz)
     pattern       TEXT,                             -- synth pattern, JSON array of semitone offsets
     duration      REAL,                             -- length in seconds
     size          REAL,                             -- file size in bytes (imported tracks)
     next_id       INTEGER,                          -- linked-list pointer to the next node
-    source_type   TEXT DEFAULT 'LOCAL',             -- 'LOCAL' | 'YOUTUBE' | 'SPOTIFY'
+    source_type   TEXT DEFAULT 'LOCAL',             -- 'LOCAL' | 'YOUTUBE'
     media_type    TEXT DEFAULT 'MUSIC',             -- 'MUSIC' | 'VIDEO'
-    source_url    TEXT,                             -- original external URL (YouTube/Spotify)
+    source_url    TEXT,                             -- original external URL (YouTube)
     source_id     TEXT,                             -- provider resource id (video id / track id)
     thumbnail_url TEXT,                             -- remote thumbnail/cover art
     artist        TEXT,

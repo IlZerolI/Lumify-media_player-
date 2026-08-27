@@ -203,7 +203,6 @@ main {
   background: rgba(139,92,246,0.14); color: var(--accent); margin-left: 6px;
 }
 .media-card .tag.src-youtube { background: rgba(255,80,80,0.14); color: #ff7b7b; }
-.media-card .tag.src-spotify { background: rgba(30,215,96,0.14); color: #1ed760; }
 .media-card .tag.src-local { background: rgba(245,200,66,0.14); color: var(--accent2); }
 
 /* ---------- List / table ---------- */
@@ -449,7 +448,6 @@ main {
   background: rgba(124,92,255,0.14); color: var(--accent); margin-left: 6px;
 }
 .tag.src-youtube { background: rgba(255,80,80,0.14); color: #ff7b7b; }
-.tag.src-spotify { background: rgba(30,215,96,0.14); color: #1ed760; }
 .tag.src-local { background: rgba(0,224,198,0.14); color: var(--accent2); }
 /* ---------- Queue / fav action buttons ---------- */
 .qnext, .qend, .fav, .qplay, .edit {

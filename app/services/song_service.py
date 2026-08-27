@@ -428,21 +428,11 @@ def detect_and_import_link(url, force_local=False):
         video_id = source_service.parse_youtube(url)
         if not video_id:
             return {"error": "invalid_youtube"}
-        if force_local:
-            local = _try_youtube_local(url, video_id)
-            if local is not None:
-                return local
-            return {"error": "local_import_failed"}
+        local = _try_youtube_local(url, video_id)
+        if local is not None:
+            return local
         meta = source_service.youtube_metadata(url)
         return add_external("YOUTUBE", url, video_id, meta.get("media_type", "VIDEO"), meta)
-    if src == "SPOTIFY":
-        parsed = source_service.parse_spotify(url)
-        if not parsed:
-            return {"error": "invalid_spotify"}
-        resource_type, resource_id = parsed
-        meta = source_service.spotify_metadata(url)
-        media_type = "MUSIC"
-        return add_external("SPOTIFY", url, resource_id, meta.get("media_type", media_type), meta, resource_type=resource_type)
     return {"error": "unsupported"}
 
 

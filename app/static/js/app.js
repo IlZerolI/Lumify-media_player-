@@ -535,7 +535,6 @@ window.Sonify = (function () {
 
     const src = (s.source_type || "LOCAL");
     if (src === "YOUTUBE") { playYouTube(s, token); return; }
-    if (src === "SPOTIFY") { playSpotify(s, token); return; }
 
     ensureAudio();
 
@@ -692,19 +691,8 @@ window.Sonify = (function () {
     });
   }
 
-  function playSpotify(s, token) {
-    state.mode = "embed";
-    state.activeEl = null;
-    const host = document.getElementById("nowMedia");
-    if (host) {
-      host.innerHTML = '<iframe class="embed" src="' + s.url + '" ' +
-        'allow="autoplay; encrypted-media" allowfullscreen frameborder="0"></iframe>';
-    }
-    recordPlayback(s.id, token);
-  }
-
   function applySourceUI(s) {
-    const embed = (s.source_type === "YOUTUBE" || s.source_type === "SPOTIFY");
+    const embed = s.source_type === "YOUTUBE";
     if (playBtn) playBtn.style.display = embed ? "none" : "";
     if (progress) progress.style.display = embed ? "none" : "";
     const timeEl = document.querySelector(".time");
@@ -928,7 +916,6 @@ window.Sonify = (function () {
       const src = (s.source_type || "LOCAL");
       if (s.type === "synth") metaBits.push("generated node · " + s.id);
       else if (src === "YOUTUBE") metaBits.push("YouTube video");
-      else if (src === "SPOTIFY") metaBits.push("Spotify track");
       else metaBits.push(s.media_type === "VIDEO" ? "local video" : "local file");
     }
     if (npMeta) npMeta.textContent = metaBits.join(" · ");
@@ -1023,7 +1010,7 @@ window.Sonify = (function () {
       return song.artwork_url;
     }
     const src = (song.source_type || "LOCAL").toLowerCase();
-    const hue = src === "youtube" ? "#ff5c5c" : src === "spotify" ? "#1ed760" : "#f5c842";
+    const hue = src === "youtube" ? "#ff5c5c" : "#f5c842";
     const initials = (song.name || "?").split(" ").slice(0, 2).map(w => w[0]).join("").toUpperCase();
     const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="320" height="320" viewBox="0 0 320 320">
       <defs>
@@ -1585,7 +1572,6 @@ window.Sonify = (function () {
       else if (libFilter === "videos") { if (mt !== "VIDEO") return false; }
       else if (libFilter === "local") { if (src !== "LOCAL") return false; }
       else if (libFilter === "youtube") { if (src !== "YOUTUBE") return false; }
-      else if (libFilter === "spotify") { if (src !== "SPOTIFY") return false; }
       else if (libFilter === "liked") { if (!s.is_favorite) return false; }
       if (libQuery) {
         const hay = (s.name + " " + (s.artist || "") + " " + (s.album || "")).toLowerCase();
@@ -1924,7 +1910,7 @@ window.Sonify = (function () {
       rebuildPlaylist();
       initMiniPlayer();
       const onPlayer = location.pathname === "/player";
-      const needsPlayer = (cached.media_type === "VIDEO" || cached.source_type === "YOUTUBE" || cached.source_type === "SPOTIFY");
+      const needsPlayer = cached.media_type === "VIDEO" || cached.source_type === "YOUTUBE";
       if (needsPlayer && !onPlayer) {
         window.location.href = "/player";
         return;

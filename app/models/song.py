@@ -62,8 +62,6 @@ class Song:
             data["pattern"] = self.pattern
         elif self.source_type == "YOUTUBE":
             data["url"] = f"https://www.youtube.com/embed/{self.source_id}"
-        elif self.source_type == "SPOTIFY":
-            data["url"] = f"https://open.spotify.com/embed/{self.type}/{self.source_id}"
         if self.artwork_path:
             data["artwork_url"] = f"/static/media/artworks/{self.artwork_path}"
         return data

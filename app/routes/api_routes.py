@@ -16,7 +16,6 @@ ERROR_MESSAGES = {
     "empty_url": "Please paste a media link.",
     "unsupported": "This media source is not supported.",
     "invalid_youtube": "The YouTube URL is invalid.",
-    "invalid_spotify": "The Spotify URL is invalid.",
     "duplicate": "This media is already in your LUMIFY library.",
 }
 

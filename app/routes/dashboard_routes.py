@@ -19,7 +19,6 @@ def index():
     songs = song_controller.fetch_playlist()
     local = [s for s in songs if (s.get("source_type") or "LOCAL") == "LOCAL"]
     youtube = [s for s in songs if s.get("source_type") == "YOUTUBE"]
-    spotify = [s for s in songs if s.get("source_type") == "SPOTIFY"]
     total = sum(s.get("duration") or 0 for s in songs)
     minutes = int(total // 60)
     seconds = int(total % 60)
@@ -27,7 +26,6 @@ def index():
         "total": len(songs),
         "local": len(local),
         "youtube": len(youtube),
-        "spotify": len(spotify),
         "duration": f"{minutes}:{seconds:02d}",
     }
     recent = song_controller.fetch_recent()
