@@ -1548,7 +1548,8 @@ window.Sonify = (function () {
                 if (d2.error) { toast(d2.error); return; }
                 return fetch("/api/songs").then((r3) => r3.json()).then((all) => {
                   state.songs = all;
-                  const song = all.find((s) => s.name === title || (d2.id && s.id === d2.id));
+                  const newId = (d2.imported && d2.imported[0]) || d2.id;
+                  const song = all.find((s) => s.id === newId);
                   if (song) playNowQueue(song.id);
                 });
               }).catch(() => toast("Play import failed."));
