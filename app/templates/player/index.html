@@ -17,12 +17,13 @@
   <div class="time"><span id="tCur">0:00</span><span id="tDur">0:00</span></div>
 
   <div class="controls">
-    <button class="ctrl sm" id="shuffleModeBtn" title="Shuffle mode">🔀<span class="lbl">off</span></button>
+    <button class="ctrl sm" id="shuffleModeBtn" title="Shuffle mode">Shuffle<span class="lbl">off</span></button>
     <button class="ctrl" id="prevBtn" title="Previous">⏮</button>
     <button class="ctrl play" id="playBtn" title="Play/Pause">▶</button>
     <button class="ctrl" id="nextBtn" title="Next">⏭</button>
-    <button class="ctrl sm" id="repeatBtn" title="Repeat">↻<span class="lbl">off</span></button>
-    <button class="ctrl sm" id="sleepBtn" title="Sleep timer">⏱<span class="lbl">off</span></button>
+    <button class="ctrl sm" id="repeatBtn" title="Repeat">Repeat<span class="lbl">off</span></button>
+    <button class="ctrl sm" id="lyricsToggleBtn" title="Lyrics">Lyrics</button>
+    <button class="ctrl sm" id="sleepBtn" title="Sleep timer">Sleep<span class="lbl">off</span></button>
   </div>
 
   <div class="vol">
@@ -35,20 +36,51 @@
   <div class="list-head">
     <span>UP NEXT · <em id="queueCount">0</em></span>
     <div class="left">
-      <button class="shuffle" id="saveQueueBtn">💾 Save as playlist</button>
+      <button class="shuffle" id="saveQueueBtn">Save as playlist</button>
       <button class="shuffle" id="clearQueueBtn">Clear</button>
     </div>
   </div>
   <ul class="nodes" id="queueNodes"></ul>
 </div>
 
+<div class="lyrics-section" id="lyricsSection" style="display:none">
+  <div class="list-head">
+    <span>LYRICS</span>
+    <div class="left">
+      <button class="shuffle" id="editLyricsBtn">Edit</button>
+    </div>
+  </div>
+  <div class="lyrics-body" id="lyricsBody">
+    <div class="lyrics-line" data-time="0">No lyrics loaded.</div>
+  </div>
+</div>
+
 <div class="list-head">
   <span>PLAYLIST NODES · <em id="nodeCount">0</em></span>
-  <button class="shuffle" id="shuffleOrderBtn">🔀 Shuffle order</button>
+  <button class="shuffle" id="shuffleOrderBtn">Shuffle order</button>
 </div>
 <ul class="nodes" id="plNodes"></ul>
 <div class="hint">Click a node to play it · drag to reorder (auto-saved) · double-click a name to rename · hover ✕ to remove</div>
 {% endblock %}
+
+  <div class="modal" id="lyricsModal">
+    <div class="modal-box">
+      <div class="modal-head">
+        <span>Edit Lyrics</span>
+        <button class="modal-close" id="lyricsClose">✕</button>
+      </div>
+      <div class="modal-list" style="padding:18px">
+        <textarea id="lyricsText" rows="12" style="width:100%;background:var(--surface);border:1px solid var(--border);color:var(--text);border-radius:var(--radius-sm);padding:10px 12px;font-size:14px;outline:none;resize:vertical;"></textarea>
+      </div>
+      <div class="modal-foot">
+        <span class="modal-sel">Use LRC format: [mm:ss.xx] lyric text</span>
+        <div>
+          <button class="shuffle" id="lyricsCancelBtn">Cancel</button>
+          <button class="browse-btn" id="lyricsSaveBtn">Save</button>
+        </div>
+      </div>
+    </div>
+  </div>
 
 {% block scripts %}
 <script src="{{ url_for('static', filename='js/app.js') }}"></script>

@@ -458,7 +458,8 @@ def _try_youtube_local(url, video_id):
 
     try:
         info = download_audio(url)
-    except Exception:
+    except Exception as e:
+        print(f"[LUMIFY] YouTube download failed: {e}")
         return None
 
     file_path = info.get("file_path")

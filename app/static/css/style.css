@@ -67,7 +67,18 @@ body {
   background: linear-gradient(135deg, var(--accent), var(--accent2));
   -webkit-background-clip: text; background-clip: text; color: transparent;
   padding: 6px 10px 10px;
+  display: inline-flex; align-items: center; gap: 8px;
 }
+.side-back {
+  display: inline-flex;
+  background: var(--surface); border: 1px solid var(--border); color: var(--text2);
+  padding: 4px 8px; border-radius: 8px; font-size: 11px; cursor: pointer;
+  margin-bottom: 0; align-items: center; justify-content: center;
+  line-height: 1;
+  transition: opacity 0.2s, border-color 0.2s, color 0.2s;
+}
+.side-back[disabled], .side-back.disabled { opacity: 0.35; cursor: not-allowed; }
+.side-back:hover:not([disabled]):not(.disabled) { border-color: var(--border2); color: var(--text); }
 .side-section { margin-top: 6px; }
 .side-section + .side-section { border-top: 1px solid var(--border); padding-top: 8px; }
 .side-label {
@@ -356,6 +367,10 @@ main {
 .queue-section { padding: 14px; margin-top: 14px; }
 .queue-drag { opacity: 0.6; }
 .queue-over { border-color: var(--accent) !important; box-shadow: 0 0 0 2px rgba(124,92,255,0.3) !important; }
+.lyrics-section { padding: 14px; margin-top: 14px; }
+.lyrics-body { max-height: 260px; overflow-y: auto; }
+.lyrics-line { padding: 8px 10px; border-radius: 10px; color: var(--text2); font-size: 14px; transition: background 0.2s, color 0.2s; }
+.lyrics-line.active { background: rgba(124,92,255,0.18); color: var(--text); }
 .yt-search { background: rgba(15,15,26,0.72); backdrop-filter: blur(12px); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px; }
 .yt-results .rail { margin-top: 8px; }
 .list-head {

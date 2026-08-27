@@ -243,3 +243,23 @@ def youtube_search():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
     return jsonify({"query": q, "results": results})
+
+
+@api_bp.route("/songs/<int:song_id>/lyrics", methods=["GET"])
+def get_lyrics(song_id):
+    from app.services.lyrics_service import get_lyrics as fetch_lyrics
+    data = fetch_lyrics(song_id)
+    if data is None:
+        return jsonify({"error": "not found"}), 404
+    return jsonify(data)
+
+
+@api_bp.route("/songs/<int:song_id>/lyrics", methods=["PUT", "PATCH"])
+def update_lyrics(song_id):
+    payload = request.get_json(silent=True) or {}
+    text = payload.get("text", "")
+    from app.services.lyrics_service import save_lyrics
+    ok = save_lyrics(song_id, text)
+    if not ok:
+        return jsonify({"error": "not found"}), 404
+    return jsonify({"ok": True})

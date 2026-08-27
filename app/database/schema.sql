@@ -44,3 +44,9 @@ CREATE TABLE IF NOT EXISTS playlist_songs (
 
 CREATE INDEX IF NOT EXISTS idx_songs_next ON songs(next_id);
 CREATE INDEX IF NOT EXISTS idx_playlist_songs_playlist ON playlist_songs(playlist_id, position);
+
+CREATE TABLE IF NOT EXISTS lyrics (
+    song_id INTEGER PRIMARY KEY REFERENCES songs(id) ON DELETE CASCADE,
+    text TEXT NOT NULL DEFAULT '',
+    updated_at TEXT NOT NULL DEFAULT (datetime('now'))
+);

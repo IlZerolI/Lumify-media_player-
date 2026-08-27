@@ -36,7 +36,6 @@ def download_audio(url):
         "quiet": True,
         "no_warnings": True,
         "noplaylist": True,
-        "extract_flat": False,
     }
 
     meta = {}
@@ -44,22 +43,26 @@ def download_audio(url):
         info = ydl.extract_info(url, download=True)
         if not info:
             raise ValueError("no_info")
-        ext = info.get("ext") or "webm"
-        file_path = os.path.join(MEDIA_FOLDER, f"{safe_name}.{ext}")
-        meta = {
-            "title": info.get("title"),
-            "artist": info.get("artist") or info.get("uploader"),
-            "album": info.get("album"),
-            "thumbnail_url": info.get("thumbnail"),
-            "duration": info.get("duration"),
-            "ext": ext,
-            "file_path": file_path,
-            "video_id": info.get("id"),
-        }
 
-    if not os.path.exists(meta["file_path"]):
+    actual = None
+    for candidate in os.listdir(MEDIA_FOLDER):
+        if candidate.startswith(safe_name + "."):
+            actual = os.path.join(MEDIA_FOLDER, candidate)
+            break
+    if not actual:
         raise ValueError("file_missing")
 
+    ext = os.path.splitext(actual)[1].lower().lstrip(".") or "mp3"
+    meta = {
+        "title": info.get("title"),
+        "artist": info.get("artist") or info.get("uploader"),
+        "album": info.get("album"),
+        "thumbnail_url": info.get("thumbnail"),
+        "duration": info.get("duration"),
+        "ext": ext,
+        "file_path": actual,
+        "video_id": info.get("id"),
+    }
     return meta
 
 

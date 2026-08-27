@@ -9,7 +9,10 @@
 </head>
 <body>
   <aside class="sidebar">
-    <div class="brand">◈ LUMIFY</div>
+    <div class="brand">
+      <button class="side-back" id="sideBackBtn" title="Back">◀</button>
+      <span>◈ LUMIFY</span>
+    </div>
 
     <div class="side-section">
       <div class="side-label">Main</div>
@@ -24,46 +27,31 @@
     </div>
 
     <div class="side-section">
-      <div class="side-label">Your Music</div>
+      <div class="side-label">Playlists</div>
       <nav>
-        <a href="{{ url_for('library.index') }}?view=liked" class="{{ 'active' if request.endpoint == 'library.index' and request.args.get('view') == 'liked' }}">
-          <span>Liked Songs</span>
+        <a href="{{ url_for('playlists.index') }}" class="{{ 'active' if request.endpoint == 'playlists.index' }}">
+          <span>Playlists</span>
         </a>
-        <a href="{{ url_for('library.index') }}?view=recent" class="{{ 'active' if request.endpoint == 'library.index' and request.args.get('view') == 'recent' }}">
-          <span>Recently Played</span>
-        </a>
-        <a href="{{ url_for('library.index') }}?view=most_played" class="{{ 'active' if request.endpoint == 'library.index' and request.args.get('view') == 'most_played' }}">
-          <span>Most Played</span>
-        </a>
-      </nav>
-    </div>
-
-    <div class="side-section">
-      <div class="side-label">Appearance</div>
-      <nav>
-        <a href="javascript:void(0)" id="themeSettingsBtn">
-          <span>Theme</span>
-        </a>
-      </nav>
-    </div>
-
-    <div class="side-section">
-      <div class="side-label">Browse</div>
-      <nav>
         <a href="{{ url_for('artists.index') }}" class="{{ 'active' if request.endpoint == 'artists.index' or request.endpoint == 'artists.detail' }}">
           <span>Artists</span>
         </a>
         <a href="{{ url_for('albums.index') }}" class="{{ 'active' if request.endpoint == 'albums.index' or request.endpoint == 'albums.detail' }}">
           <span>Albums</span>
         </a>
-        <a href="{{ url_for('playlists.index') }}" class="{{ 'active' if request.endpoint == 'playlists.index' }}">
-          <span>Playlists</span>
-        </a>
+      </nav>
+    </div>
+
+    <div class="side-section">
+      <div class="side-label">Tools</div>
+      <nav>
         <a href="{{ url_for('player.index') }}" class="{{ 'active' if request.endpoint == 'player.index' }}">
           <span>Player</span>
         </a>
         <a href="{{ url_for('visualizer.index') }}" class="{{ 'active' if request.endpoint == 'visualizer.index' }}">
           <span>Audio Visualizer</span>
+        </a>
+        <a href="javascript:void(0)" id="themeSettingsBtn">
+          <span>Theme</span>
         </a>
       </nav>
     </div>
