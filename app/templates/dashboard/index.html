@@ -20,10 +20,13 @@
 
 {% if recent %}
 <h2 class="sec-title">Recently Played</h2>
-<div class="rail">
+<div class="rail rail-sm">
   {% for s in recent %}
   <div class="media-card">
     <div class="art">
+      {% if s.artwork_url %}
+        <img src="{{ s.artwork_url }}" loading="lazy" alt="">
+      {% endif %}
       <div class="play-overlay">
         <button class="play-btn" onclick="Sonify.playNowQueue({{ s.id }})">▶</button>
       </div>
@@ -46,6 +49,9 @@
 <ol class="mini-list">
   {% for s in most_played %}
   <li>
+    {% if s.artwork_url %}
+      <img class="mini-thumb" src="{{ s.artwork_url }}" loading="lazy" alt="">
+    {% endif %}
     <span class="tag src-{{ (s.source_type or 'LOCAL')|lower }}">{{ s.source_type or 'LOCAL' }}</span>
     <span class="mini-name">{{ s.name }}</span>
     <span class="mini-dur">{{ s.play_count }} plays</span>
@@ -58,6 +64,9 @@
 <ol class="mini-list">
   {% for s in songs %}
   <li>
+    {% if s.artwork_url %}
+      <img class="mini-thumb" src="{{ s.artwork_url }}" loading="lazy" alt="">
+    {% endif %}
     <span class="tag src-{{ (s.source_type or 'LOCAL')|lower }}">{{ s.source_type or 'LOCAL' }}</span>
     <span class="mini-name">{{ s.name }}</span>
     <span class="mini-dur">{{ s.duration|fmt_dur }}</span>

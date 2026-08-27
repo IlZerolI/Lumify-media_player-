@@ -1329,6 +1329,7 @@ window.Sonify = (function () {
   /* ============================ Library ============================ */
   let libAll = [];
   let libFilter = "all";
+  let tabHistory = [];
   let libQuery = "";
   let libView = localStorage.getItem("lumifyView") || "list"; // list | grid | rail
   let libEmptyMsg = "No media matches.";
@@ -1384,13 +1385,34 @@ window.Sonify = (function () {
     if (search) search.addEventListener("input", () => {
       libQuery = search.value.toLowerCase(); renderLib(listEl);
     });
+    const backBtn = document.getElementById("tabBackBtn");
+    const syncBackBtn = () => {
+      if (backBtn) backBtn.style.display = tabHistory.length ? "" : "none";
+    };
+    const switchTab = (filter, pushHistory = true) => {
+      if (pushHistory && libFilter !== filter) {
+        tabHistory.push(libFilter);
+        if (tabHistory.length > 50) tabHistory.shift();
+      }
+      document.querySelectorAll("#filterTabs .tab").forEach((x) => x.classList.remove("active"));
+      const tab = document.querySelector('#filterTabs .tab[data-f="' + filter + '"]');
+      if (tab) tab.classList.add("active");
+      libFilter = filter;
+      syncBackBtn();
+      renderLib(listEl);
+    };
     document.querySelectorAll("#filterTabs .tab").forEach((t) =>
       t.addEventListener("click", () => {
-        document.querySelectorAll("#filterTabs .tab").forEach((x) => x.classList.remove("active"));
-        t.classList.add("active");
-        libFilter = t.dataset.f;
-        renderLib(listEl);
+        switchTab(t.dataset.f, true);
       }));
+    if (backBtn) {
+      backBtn.addEventListener("click", () => {
+        const prev = tabHistory.pop();
+        if (!prev) return;
+        switchTab(prev, false);
+      });
+    }
+    syncBackBtn();
 
     const viewListBtn = document.getElementById("viewListBtn");
     const viewGridBtn = document.getElementById("viewGridBtn");
@@ -2017,7 +2039,6 @@ window.Sonify = (function () {
     if (canResumeNow) {
       state.songs = [cached];
       rebuildPlaylist();
-      initMiniPlayer();
       const onPlayer = location.pathname === "/player";
       const needsPlayer = cached.media_type === "VIDEO" || cached.source_type === "YOUTUBE";
       if (needsPlayer && !onPlayer) {
@@ -2027,8 +2048,6 @@ window.Sonify = (function () {
       state.playing = true;
       updatePlayBtn();
       try { playCurrent(state.pausedAt || 0); } catch (e) {}
-    } else {
-      initMiniPlayer();
     }
 
     try {
@@ -2176,7 +2195,7 @@ window.Sonify = (function () {
     }
   }
   function initTheme() {
-    const theme = loadTheme();
+    let theme = loadTheme();
     applyTheme(theme);
 
     const modal = document.getElementById("themeModal");
@@ -2215,6 +2234,7 @@ window.Sonify = (function () {
         };
         saveTheme(next);
         applyTheme(next);
+        theme = next;
         closeModal();
       });
     }
@@ -2223,6 +2243,7 @@ window.Sonify = (function () {
         const def = { accent: "purple", mode: "dark", compact: "default", artwork: "medium" };
         saveTheme(def);
         applyTheme(def);
+        theme = def;
         syncFields();
       });
     }
@@ -2231,6 +2252,7 @@ window.Sonify = (function () {
 
   /* ============================ Export ============================ */
   initTheme();
+  initMiniPlayer();
   return {
     initLibrary, initPlaylist, initPlayer,
     toggleFavorite, playNowQueue, enqueue, enqueueNext, removeFromQueue, clearQueue, toast,
