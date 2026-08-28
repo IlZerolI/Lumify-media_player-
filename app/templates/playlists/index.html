@@ -1,6 +1,6 @@
 {% extends "base.html" %}
-{% block heading %}Playlists{% endblock %}
-{% block subheading %}Your saved collections and current play order.{% endblock %}
+{% block heading %}Library{% endblock %}
+{% block subheading %}Playlists, artists, and albums in one place.{% endblock %}
 
 {% block content %}
 <div class="list-head">
@@ -9,6 +9,46 @@
 </div>
 <ul class="nodes" id="plNodes"></ul>
 <div class="hint">Drag a node up/down to change the order. Changes persist on the server.</div>
+
+{% if artists %}
+<h2 class="sec-title">Artists</h2>
+<div class="rail">
+  {% for a in artists %}
+  <a class="media-card" href="{{ url_for('artists.detail', artist_name=a.artist) }}">
+    <div class="art">
+      <div class="art-bg"></div>
+      <div class="play-overlay">
+        <button class="play-btn" title="Play all">▶</button>
+      </div>
+    </div>
+    <div class="meta">
+      <div class="title" title="{{ a.artist }}">{{ a.artist }}</div>
+      <div class="sub">{{ a.song_count }} songs · {{ a.album_count }} albums</div>
+    </div>
+  </a>
+  {% endfor %}
+</div>
+{% endif %}
+
+{% if albums %}
+<h2 class="sec-title">Albums</h2>
+<div class="rail">
+  {% for a in albums %}
+  <a class="media-card" href="{{ url_for('albums.detail', album_name=a.album) }}{% if a.artist %}?artist={{ a.artist|urlencode }}{% endif %}">
+    <div class="art">
+      <div class="art-bg"></div>
+      <div class="play-overlay">
+        <button class="play-btn" title="Play album">▶</button>
+      </div>
+    </div>
+    <div class="meta">
+      <div class="title" title="{{ a.album }}">{{ a.album }}</div>
+      <div class="sub">{{ a.artist }} · {{ a.song_count }} songs{% if a.year %} · {{ a.year }}{% endif %}</div>
+    </div>
+  </a>
+  {% endfor %}
+</div>
+{% endif %}
 {% endblock %}
 
 {% block scripts %}

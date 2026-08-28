@@ -8,4 +8,6 @@ playlists_bp = Blueprint("playlists", __name__, url_prefix="/playlists")
 @playlists_bp.route("")
 def index():
     songs = song_controller.fetch_playlist()
-    return render_template("playlists/index.html", songs=songs)
+    artists = song_controller.fetch_artists()
+    albums = song_controller.fetch_albums()
+    return render_template("playlists/index.html", songs=songs, artists=artists, albums=albums)

@@ -1,3 +1,4 @@
+import asyncio
 import os
 
 from flask import (
@@ -263,3 +264,30 @@ def update_lyrics(song_id):
     if not ok:
         return jsonify({"error": "not found"}), 404
     return jsonify({"ok": True})
+
+
+@api_bp.route("/lyrics/fetch", methods=["POST"])
+def fetch_lyrics_remote():
+    payload = request.get_json(silent=True) or {}
+    video_id = payload.get("video_id") or payload.get("song_id")
+    title = payload.get("title") or ""
+    artist = payload.get("artist") or ""
+    duration = payload.get("duration")
+    if not video_id:
+        return jsonify({"error": "video_id required"}), 400
+    from app.services.lyrics_provider import fetch_youtube_lrc
+    from app.services.song_service import get_song
+    from app.database.database import get_connection
+    song = get_song(video_id)
+    if not song:
+        conn = get_connection()
+        row = conn.execute("SELECT * FROM songs WHERE source_type = 'YOUTUBE' AND source_id = ?", (video_id,)).fetchone()
+        conn.close()
+        if row:
+            song = get_song(row["id"])
+    if song:
+        title = title or song.name
+        artist = artist or (song.artist or "")
+        duration = duration if duration is not None else song.duration
+    lines = asyncio.run(fetch_youtube_lrc(video_id, title=title, artist=artist, duration=duration))
+    return jsonify({"lines": lines, "source": "lrclib"})

@@ -70,6 +70,7 @@
     <span class="tag src-{{ (s.source_type or 'LOCAL')|lower }}">{{ s.source_type or 'LOCAL' }}</span>
     <span class="mini-name">{{ s.name }}</span>
     <span class="mini-dur">{{ s.duration|fmt_dur }}</span>
+    <button class="mini-play" onclick="Sonify.playNowQueue({{ s.id }})" title="Play">▶</button>
   </li>
   {% endfor %}
 </ol>
